@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc -p tsconfig.json",
+    "build": "pnpx tsc -p tsconfig.json",
     "start": "node build/app.js",
-    "debug": "nodemon --exec 'ts-node src/app.ts'"
+    "debug": "nodemon --exec 'ts-node src/app.ts'",
+    "preinstall": "npx only-allow pnpm"
   },
   "keywords": [],
   "author": "",
