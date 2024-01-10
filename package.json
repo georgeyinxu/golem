@@ -20,6 +20,8 @@
     "@prisma/client": "^4.16.2",
     "@sentry/node": "^7.58.1",
     "axios": "^1.6.5",
+    "bybit-api": "^3.8.0",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.0.3",
     "ethers": "^6.9.2",
     "fastify": "^4.17.0",

@@ -26,6 +26,9 @@ const bybitSchema: RouteShorthandOptions = {
                   type: "string",
                 },
               },
+              total: {
+                type: "number"
+              }
             },
           },
         },
