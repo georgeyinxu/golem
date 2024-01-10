@@ -1,20 +1,7 @@
 import { RouteShorthandOptions } from "fastify";
 
-const depositsSchema: RouteShorthandOptions = {
+const bybitSchema: RouteShorthandOptions = {
   schema: {
-    body: {
-      type: "object",
-      properties: {
-        address: { type: "string" },
-        twitter: { type: "string" },
-        discord: { type: "string" },
-        telegram: { type: "string" },
-        email: { type: "string" },
-        startTimestamp: { type: "string" },
-        endTimestamp: { type: "string" },
-      },
-      required: ["address"],
-    },
     response: {
       200: {
         type: "object",
@@ -33,8 +20,11 @@ const depositsSchema: RouteShorthandOptions = {
           data: {
             type: "object",
             properties: {
-              result: {
-                type: "boolean",
+              addresses: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
               },
             },
           },
@@ -45,4 +35,4 @@ const depositsSchema: RouteShorthandOptions = {
   },
 };
 
-export default depositsSchema;
+export default bybitSchema;

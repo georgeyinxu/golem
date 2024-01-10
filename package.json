@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/cors": "^8.2.1",
+    "@fastify/multipart": "^8.1.0",
     "@fastify/postgres": "^5.2.0",
     "@fastify/redis": "^6.1.1",
     "@fastify/url-data": "^5.3.1",

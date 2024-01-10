@@ -4,10 +4,11 @@ dotenv.config();
 
 import fastify, { FastifyInstance } from "fastify";
 import { fastifyPostgres } from "@fastify/postgres";
+import multipart from "@fastify/multipart";
 import cors from "@fastify/cors";
 
 // Modules
-import { IntractModule } from "./modules";
+import { BybitModule, IntractModule } from "./modules";
 
 // Middlewares
 import securityMiddleware from "./middlewares/security.middleware";
@@ -66,6 +67,9 @@ app.register(cors, {
   origin: "*",
 });
 
+// Multipart
+app.register(multipart);
+
 // Security Middleware
 app.addHook("onRequest", securityMiddleware);
 
@@ -83,6 +87,7 @@ app.get("/health", async (request, reply) => {
 
 // Register module
 app.register(IntractModule);
+app.register(BybitModule);
 
 app.listen({ port: 3000 }, (err, address) => {
   if (err) {

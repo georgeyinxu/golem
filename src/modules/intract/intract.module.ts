@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { IntractInterface } from "./interfaces/intract.interface";
-import prisma from "../../db/prisma";
+import intractSchema from "./schemas/intract.schema";
 import { DateTime } from "luxon";
 import axios from "axios";
 import { ethers } from "ethers";
@@ -10,6 +10,7 @@ export default async function IntractModule(
 ): Promise<void> {
   fastify.post<{ Body: IntractInterface }>(
     "/intract/burn",
+    intractSchema,
     async (request, reply) => {
       const { address, startTimestamp, endTimestamp } = request.body;
       let response: {
@@ -77,6 +78,7 @@ export default async function IntractModule(
 
   fastify.post<{ Body: IntractInterface }>(
     "/intract/hold",
+    intractSchema,
     async (request, reply) => {
       const { address, minAmount } = request.body;
       let response: {
@@ -115,7 +117,7 @@ export default async function IntractModule(
         const balance = parseFloat(ethers.formatEther(res.data.result));
 
         if (balance > minAmount) {
-            response.data.result = true;
+          response.data.result = true;
         }
       } catch (error: any) {
         response.error = { code: error.code, message: error.message };
