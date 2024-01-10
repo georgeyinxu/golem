@@ -1,0 +1,36 @@
+{
+  "name": "golem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc -p tsconfig.json",
+    "start": "node build/app.js",
+    "debug": "nodemon --exec 'ts-node src/app.ts'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^8.2.1",
+    "@fastify/postgres": "^5.2.0",
+    "@fastify/redis": "^6.1.1",
+    "@fastify/url-data": "^5.3.1",
+    "@prisma/client": "^4.16.2",
+    "@sentry/node": "^7.58.1",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.17.0",
+    "fastify-plugin": "^4.5.0",
+    "jsonwebtoken": "^9.0.1",
+    "pg": "^8.10.0",
+    "pino-pretty": "^10.0.0",
+    "prisma": "^4.16.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "nodemon": "^3.0.1",
+    "prisma": "^4.16.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
