@@ -7,6 +7,7 @@ import { fastifyPostgres } from "@fastify/postgres";
 import cors from "@fastify/cors";
 
 // Modules
+import { IntractModule } from "./modules";
 
 // Middlewares
 import securityMiddleware from "./middlewares/security.middleware";
@@ -81,8 +82,7 @@ app.get("/health", async (request, reply) => {
 });
 
 // Register module
-// app.register(PointsModule);
-// app.register(DepositsModule);
+app.register(IntractModule);
 
 app.listen({ port: 3000 }, (err, address) => {
   if (err) {
