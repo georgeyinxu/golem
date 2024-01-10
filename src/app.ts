@@ -27,7 +27,7 @@ const serializers = {
       url: request.url,
       clientId,
       remoteAddress: request.ip,
-      remotePort: request.connection.remotePort,
+      remotePort: request.socket.remotePort,
       host: request.hostname,
     };
   },
