@@ -22,7 +22,7 @@ export default async function IntractModule(
           code: 400,
           message: "Please ensure that POLYGONSCAN_API_KEY is set.",
         };
-        return reply.send(response);
+        return reply.status(400).send(response);
       }
 
       const params: {
@@ -66,6 +66,56 @@ export default async function IntractModule(
           if (deadWalletTransfers.length > 0) {
             response.data.result = true;
           }
+        }
+      } catch (error: any) {
+        response.error = { code: error.code, message: error.message };
+      }
+
+      return reply.send(response);
+    }
+  );
+
+  fastify.post<{ Body: IntractInterface }>(
+    "/intract/hold",
+    async (request, reply) => {
+      const { address, minAmount } = request.body;
+      let response: {
+        error?: { code: number; message: string };
+        data: { result: boolean };
+      } = { data: { result: false } };
+
+      if (!process.env.POLYGONSCAN_API_KEY) {
+        response.error = {
+          code: 400,
+          message: "Please ensure that POLYGONSCAN_API_KEY is set.",
+        };
+        return reply.status(400).send(response);
+      }
+
+      if (!minAmount) {
+        response.error = {
+          code: 400,
+          message: "Please ensure that minAmount is set in request body.",
+        };
+        return reply.status(400).send(response);
+      }
+
+      try {
+        const res = await axios.get("https://api.polygonscan.com/api", {
+          params: {
+            module: "account",
+            action: "tokenbalance",
+            contractaddress: "0x6A34A7284B13bA70A6135bE9738Da35C5eF22f78",
+            address,
+            tag: "latest",
+            apikey: process.env.POLYGONSCAN_API_KEY,
+          },
+        });
+
+        const balance = parseFloat(ethers.formatEther(res.data.result));
+
+        if (balance > minAmount) {
+            response.data.result = true;
         }
       } catch (error: any) {
         response.error = { code: error.code, message: error.message };

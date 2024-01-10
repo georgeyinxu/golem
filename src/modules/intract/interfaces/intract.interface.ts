@@ -6,4 +6,5 @@ export interface IntractInterface {
   email?: string;
   startTimestamp?: string;
   endTimestamp?: string;
+  minAmount?: number;
 }
