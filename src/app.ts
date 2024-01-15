@@ -8,7 +8,7 @@ import multipart from "@fastify/multipart";
 import cors from "@fastify/cors";
 
 // Modules
-import { BybitModule, IntractModule } from "./modules";
+import { BybitModule, IntractModule, MetamaskModule } from "./modules";
 
 // Middlewares
 import securityMiddleware from "./middlewares/security.middleware";
@@ -88,6 +88,7 @@ app.get("/health", async (request, reply) => {
 // Register module
 app.register(IntractModule);
 app.register(BybitModule);
+app.register(MetamaskModule);
 
 app.listen({ port: 3000 }, (err, address) => {
   if (err) {

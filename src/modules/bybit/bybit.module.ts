@@ -4,10 +4,7 @@ import bybitSchema from "./schemas/bybit.schema";
 import csvParser from "csv-parser";
 import * as path from "path";
 import bybitClient from "../../services/bybitClient";
-import { submitWithdrawal } from "../../utils/bybit";
 import prisma from "../../db/prisma";
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default async function BybitModule(
   fastify: FastifyInstance
