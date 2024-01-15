@@ -9,3 +9,12 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Bybit {
+  id            BigInt      @id @default(autoincrement())
+  address       String      
+  amount        Float?
+  transactionId Int 
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
