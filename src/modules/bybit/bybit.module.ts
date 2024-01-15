@@ -93,6 +93,8 @@ export default async function BybitModule(
                       transactionId,
                     },
                   });
+
+                  // TODO: Add 10 second delay
                 } catch (error) {
                   return reply
                     .status(500)
