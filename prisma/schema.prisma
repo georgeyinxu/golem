@@ -61,6 +61,7 @@ model Retweet {
   id        BigInt   @id @default(autoincrement())
   accountId BigInt   // Foreign key to Account
   tweetId   BigInt   // Foreign key to Tweet
+  text      String
   retweetedAt DateTime @default(now()) // Timestamp when the retweet was made
   account   Account  @relation(fields: [accountId], references: [twitterId])
   tweet     Tweet    @relation(fields: [tweetId], references: [tweetId])
