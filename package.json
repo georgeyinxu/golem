@@ -30,7 +30,8 @@
     "luxon": "^3.4.4",
     "pg": "^8.10.0",
     "pino-pretty": "^10.0.0",
-    "prisma": "^4.16.2"
+    "prisma": "^4.16.2",
+    "twitter-api-v2": "^1.15.2"
   },
   "devDependencies": {
     "@types/luxon": "^3.4.0",
