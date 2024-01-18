@@ -11,60 +11,62 @@ datasource db {
 }
 
 model Bybit {
-  id            BigInt      @id @default(autoincrement())
-  address       String      
+  id            BigInt   @id @default(autoincrement())
+  address       String
   amount        Float?
-  transactionId Int 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  transactionId Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Account {
-  id            BigInt     @id @default(autoincrement())
-  twitterId     BigInt     @unique
-  username      String     @unique
-  followerCount Int
-  followingCount Int
-  verified      Boolean
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  tweets        Tweet[]    @relation("AccountTweets")
-  likes         Like[]     // Relation field for likes
-  retweets      Retweet[]  // Relation field for retweets
-  comments      Comment[]  // Relation field for comments
+  id             BigInt    @id @default(autoincrement())
+  twitterId      String    @unique
+  username       String    @unique
+  followerCount  Int?
+  followingCount Int?
+  verified       Boolean?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  tweets         Tweet[]   @relation("AccountTweets")
+  likes          Like[] // Relation field for likes
+  retweets       Retweet[] // Relation field for retweets
+  comments       Comment[] // Relation field for comments
 }
 
 model Tweet {
-  id        BigInt     @id @default(autoincrement())
-  tweetId   BigInt     @unique
+  id        BigInt    @id @default(autoincrement())
+  tweetId   String    @unique
   text      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  author    Account    @relation(name: "AccountTweets", fields: [authorId], references: [twitterId])
-  authorId  BigInt
-  likes     Like[]     // Relation field for likes
-  retweets  Retweet[]  // Relation field for retweets
-  comments  Comment[]  // Relation field for comments
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    Account   @relation(name: "AccountTweets", fields: [authorId], references: [twitterId])
+  authorId  String
+  likes     Like[] // Relation field for likes
+  retweets  Retweet[] // Relation field for retweets
+  comments  Comment[] // Relation field for comments
 }
 
 model Like {
   id        BigInt   @id @default(autoincrement())
-  accountId BigInt   // Foreign key to Account
-  tweetId   BigInt   // Foreign key to Tweet
+  accountId String // Foreign key to Account
+  tweetId   String // Foreign key to Tweet
   likedAt   DateTime @default(now()) // Timestamp when the like was created
   account   Account  @relation(fields: [accountId], references: [twitterId])
   tweet     Tweet    @relation(fields: [tweetId], references: [tweetId])
+
   @@unique([accountId, tweetId]) // Ensure unique combination of accountId and tweetId
 }
 
 model Retweet {
-  id        BigInt   @id @default(autoincrement())
-  accountId BigInt   // Foreign key to Account
-  tweetId   BigInt   // Foreign key to Tweet
-  text      String
+  id          BigInt   @id @default(autoincrement())
+  accountId   String // Foreign key to Account
+  tweetId     String // Foreign key to Tweet
+  text        String
   retweetedAt DateTime @default(now()) // Timestamp when the retweet was made
-  account   Account  @relation(fields: [accountId], references: [twitterId])
-  tweet     Tweet    @relation(fields: [tweetId], references: [tweetId])
+  account     Account  @relation(fields: [accountId], references: [twitterId])
+  tweet       Tweet    @relation(fields: [tweetId], references: [tweetId])
+
   @@unique([accountId, tweetId]) // Ensure unique combination of accountId and tweetId
 }
 
@@ -74,7 +76,7 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   author    Account  @relation(fields: [authorId], references: [twitterId])
-  authorId  BigInt   
+  authorId  String
   tweet     Tweet    @relation(fields: [tweetId], references: [tweetId])
-  tweetId   BigInt   
+  tweetId   String
 }
