@@ -2,14 +2,16 @@ import { FastifyInstance } from "fastify";
 import twitterSchema from "./schemas/twitter.schema";
 import { TwitterInterface } from "./interfaces/twitter.interface";
 import twitterClient from "../../services/twitterClient";
+import prisma from "../../db/prisma";
 
 export default async function TwitterModule(
   fastify: FastifyInstance
 ): Promise<void> {
   fastify.get<{
     Querystring: TwitterInterface;
-  }>("/twitter/points", twitterSchema, async (request, reply) => {
+  }>("/twitter/scrape", twitterSchema, async (request, reply) => {
     const { id } = request.query;
+    const mainUsernames = ["SaladVentures"];
 
     let response: {
       error?: { code: number; message: string };
@@ -17,33 +19,36 @@ export default async function TwitterModule(
     } = { result: { username: "", points: "" } };
 
     try {
-      const tweetsResponse = await twitterClient.v2.userTimeline(id, {
-        start_time: "2024-01-01T00:00:00Z",
-        "tweet.fields": ["id", "text", "created_at"],
+      // 1. Get the latest Tweets from SV
+      const saladAccount = await prisma.account.findFirst({
+        where: { username: mainUsernames[0] },
       });
-      const tweetsFromSV = tweetsResponse.data.data;
 
-      // TODO: Store the tweets from SV into DB
+      if (!saladAccount) {
+        throw new Error("Salad Ventures account not found");
+      }
 
-      // Getting all the replies, likes and retweets of a specific post
-      tweetsFromSV.map(async (tweet) => {
-        // const usersWhoLiked = await twitterClient.v2.tweetLikedBy(tweet.id, { asPaginator: true });
+      const latestTweets = await twitterClient.v2.userTimeline(
+        saladAccount.twitterId,
+        {
+          start_time: "2024-01-01T00:00:00Z",
+          "tweet.fields": ["id", "text", "created_at", "author_id"],
+        }
+      );
 
-        // console.log(`Users Liked: ${tweet.id}`, usersWhoLiked.data);
-        // const usersWhoRetweeted = await twitterClient.v2.tweetRetweetedBy(
-        //   tweet.id,
-        //   {
-        //     asPaginator: true,
-        //   }
-        // );
+      // const latestTweetsUpsert = latestTweets.data.data.map(tweet => {
+      //   return prisma.tweet.upsert({
+      //     where: { tweetId: tweet.id },
+      //     update: {},
+      //     create: {
+      //       tweetId: tweet.id,
+      //       text: tweet.text,
+      //       authorId: tweet.author_id,
+      //     }
+      //   })
+      // })
 
-        // console.log(
-        //   `Users who re-tweeted: ${tweet.id}`,
-        //   usersWhoRetweeted.data
-        // );
-
-        // TODO: How should brownie points be calculated?
-      });
+      // await prisma.$transaction(latestTweetsUpsert);
     } catch (error: any) {
       response.error = { code: error.code, message: error.message };
       return reply.status(error.code).send(response);
