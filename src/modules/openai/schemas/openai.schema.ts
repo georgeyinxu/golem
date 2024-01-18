@@ -27,6 +27,9 @@ const openAiSchema: RouteShorthandOptions = {
           message: {
             type: "string",
           },
+          positive: {
+            type: "boolean"
+          }
         },
       },
     },
