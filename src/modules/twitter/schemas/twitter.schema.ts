@@ -3,11 +3,7 @@ import { RouteShorthandOptions } from "fastify";
 const twitterSchema: RouteShorthandOptions = {
   schema: {
     querystring: {
-      type: "object",
-      properties: {
-        id: { type: "string" },
-      },
-      required: ["id"],
+      
     },
     response: {
       200: {
@@ -27,8 +23,8 @@ const twitterSchema: RouteShorthandOptions = {
           result: {
             type: "object",
             properties: {
-              username: { type: "string" },
-              points: { type: "string" },
+              type: { type: "string" },
+              success: { type: "boolean" },
             },
           },
         },

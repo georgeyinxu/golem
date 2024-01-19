@@ -72,6 +72,10 @@ if (process.env.CACHE_ENABLED == "true") {
         path: "/twitter/points",
         ttl: parseInt(process.env.TWITTER_CACHE_TTL || "60"),
       },
+      {
+        path: "/twitter/scrape",
+        ttl: parseInt(process.env.TWITTER_CACHE_TTL || "60"),
+      },
     ],
   });
 }
