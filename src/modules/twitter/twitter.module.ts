@@ -112,4 +112,59 @@ export default async function TwitterModule(
 
     return reply.send(response);
   });
+
+  fastify.get("/twitter/retweet", twitterSchema, async (request, reply) => {
+    let response: {
+      error?: { code: number; message: string };
+      result: { type: "tweet" | "like" | "retweet"; success: boolean };
+    } = { result: { type: "retweet", success: false } };
+
+    try {
+      const latestTweets = await prisma.tweet.findMany();
+      const retweetOperations: PrismaPromise<any>[] = [];
+
+      for (const tweet of latestTweets) {
+        const response = await twitterClient.v2.tweetRetweetedBy(tweet.tweetId);
+        const retweet = response.data;
+
+        if (retweet) {
+          for (const rt of retweet) {
+            const accountId = rt.id;
+
+            const retweetData = {
+              tweetId: tweet.tweetId,
+              accountId: accountId,
+              retweetedAt: new Date(),
+              text: "",
+            };
+
+            retweetOperations.push(
+              prisma.retweet.upsert({
+                where: {
+                  accountId_tweetId: {
+                    accountId: rt.id,
+                    tweetId: tweet.tweetId,
+                  },
+                },
+                update: {
+                  retweetedAt: new Date(),
+                },
+                create: retweetData,
+              })
+            );
+          }
+        }
+      }
+
+      if (retweetOperations.length > 0) {
+        await prisma.$transaction(retweetOperations);
+        response.result.success = true;
+      }
+    } catch (error: any) {
+      response.error = { code: error.code, message: error.message };
+      return reply.status(error.code).send(response);
+    }
+
+    return reply.send(response);
+  });
 }
