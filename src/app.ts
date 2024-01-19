@@ -8,12 +8,19 @@ import multipart from "@fastify/multipart";
 import cors from "@fastify/cors";
 
 // Modules
-import { BybitModule, IntractModule, MetamaskModule, OpenAiModule, TwitterModule } from "./modules";
+import {
+  BybitModule,
+  IntractModule,
+  MetamaskModule,
+  OpenAiModule,
+  TwitterModule,
+} from "./modules";
 
 // Middlewares
 import securityMiddleware from "./middlewares/security.middleware";
 
 // Plugins
+import cachePlugin from "./plugins/cache/cache.plugin";
 
 const serializers = {
   req(request: any) {
@@ -56,6 +63,18 @@ const env = process.env.NODE_ENV || "development";
 const app: FastifyInstance = fastify({
   logger: envToLogger[env as keyof typeof envToLogger] ?? true,
 });
+
+// Cache Plugin
+if (process.env.CACHE_ENABLED == "true") {
+  app.register(cachePlugin, {
+    routes: [
+      {
+        path: "/twitter/points",
+        ttl: parseInt(process.env.TWITTER_CACHE_TTL || "60"),
+      },
+    ],
+  });
+}
 
 // Database connection
 app.register(fastifyPostgres, {
