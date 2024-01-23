@@ -69,11 +69,15 @@ if (process.env.CACHE_ENABLED == "true") {
   app.register(cachePlugin, {
     routes: [
       {
-        path: "/twitter/points",
+        path: "/twitter/tweet",
         ttl: parseInt(process.env.TWITTER_CACHE_TTL || "60"),
       },
       {
-        path: "/twitter/scrape",
+        path: "/twitter/like",
+        ttl: parseInt(process.env.TWITTER_CACHE_TTL || "60"),
+      },
+      {
+        path: "/twitter/retweet",
         ttl: parseInt(process.env.TWITTER_CACHE_TTL || "60"),
       },
     ],

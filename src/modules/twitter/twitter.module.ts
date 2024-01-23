@@ -70,30 +70,40 @@ export default async function TwitterModule(
       const likeOperations: PrismaPromise<any>[] = [];
 
       for (const tweet of latestTweets) {
-        const response = await twitterClient.v2.tweetLikedBy(tweet.tweetId);
-        const likes = response.data;
+        const twitterResponse = await twitterClient.v2.tweetLikedBy(
+          tweet.tweetId
+        );
+        const likes = twitterResponse.data;
 
         if (likes) {
           for (const like of likes) {
             const accountId = like.id;
-
             const likeData = {
               tweetId: tweet.tweetId,
               accountId: accountId,
               likedAt: new Date(),
             };
 
+            // Check if Account exists, if not create it
+            await prisma.account.upsert({
+              where: { twitterId: accountId },
+              update: {},
+              create: {
+                twitterId: accountId,
+                username: like.username || "unknown",
+              },
+            });
+
+            // Upsert the like
             likeOperations.push(
               prisma.like.upsert({
                 where: {
                   accountId_tweetId: {
-                    accountId: like.id,
+                    accountId: accountId,
                     tweetId: tweet.tweetId,
                   },
                 },
-                update: {
-                  likedAt: new Date(),
-                },
+                update: { likedAt: new Date() },
                 create: likeData,
               })
             );
@@ -107,7 +117,7 @@ export default async function TwitterModule(
       }
     } catch (error: any) {
       response.error = { code: error.code, message: error.message };
-      return reply.status(error.code).send(response);
+      return reply.status(500).send(response);
     }
 
     return reply.send(response);
@@ -124,32 +134,41 @@ export default async function TwitterModule(
       const retweetOperations: PrismaPromise<any>[] = [];
 
       for (const tweet of latestTweets) {
-        const response = await twitterClient.v2.tweetRetweetedBy(tweet.tweetId);
-        const retweet = response.data;
+        const twitterResponse = await twitterClient.v2.tweetRetweetedBy(
+          tweet.tweetId
+        );
+        const retweets = twitterResponse.data;
 
-        if (retweet) {
-          for (const rt of retweet) {
-            const accountId = rt.id;
+        if (retweets) {
+          for (const retweet of retweets) {
+            const accountId = retweet.id;
 
-            const retweetData = {
-              tweetId: tweet.tweetId,
-              accountId: accountId,
-              retweetedAt: new Date(),
-              text: "",
-            };
+            // Check if Account exists, if not create it
+            await prisma.account.upsert({
+              where: { twitterId: accountId },
+              update: {},
+              create: {
+                twitterId: accountId,
+                username: retweet.username || "unknown",
+              },
+            });
 
+            // Upsert the retweet
             retweetOperations.push(
               prisma.retweet.upsert({
                 where: {
                   accountId_tweetId: {
-                    accountId: rt.id,
+                    accountId: accountId,
                     tweetId: tweet.tweetId,
                   },
                 },
-                update: {
+                update: { retweetedAt: new Date() },
+                create: {
+                  accountId: accountId,
+                  tweetId: tweet.tweetId,
+                  text: "",
                   retweetedAt: new Date(),
                 },
-                create: retweetData,
               })
             );
           }
@@ -162,7 +181,7 @@ export default async function TwitterModule(
       }
     } catch (error: any) {
       response.error = { code: error.code, message: error.message };
-      return reply.status(error.code).send(response);
+      return reply.status(500).send(response);
     }
 
     return reply.send(response);
