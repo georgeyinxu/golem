@@ -30,6 +30,14 @@ export default async function MetamaskModule(
       return reply.status(400).send(response);
     }
 
+    if (!process.env.SALD_POS_ADDR) {
+      response.error = {
+        code: 400,
+        message: "Please set SALD_POS_ADDR in .env.",
+      };
+      return reply.status(400).send(response);
+    }
+
     if (!process.env.WALLET_PK) {
       response.error = {
         code: 400,
@@ -38,14 +46,19 @@ export default async function MetamaskModule(
       return reply.status(400).send(response);
     }
 
+    // ETH
+    // const node =
+    //   "https://ultra-silent-research.quiknode.pro/47d5b8d5ee13ad16adeae81a46eb430a0bc48eb5/";
+
+    // POS
     const node =
-      "https://ultra-silent-research.quiknode.pro/47d5b8d5ee13ad16adeae81a46eb430a0bc48eb5/";
+    "https://frequent-sly-morning.matic.quiknode.pro/ef44fbf18a4281b04465de0c5fbe5bb1e0d006aa/";
     const provider = new ethers.JsonRpcProvider(node);
     const privateKey = process.env.WALLET_PK;
     const wallet = new ethers.Wallet(privateKey, provider);
 
     const tokenContract = new ethers.Contract(
-      process.env.SALD_ETH_ADDR,
+      process.env.SALD_POS_ADDR,
       tokenAbi,
       wallet
     );
@@ -73,9 +86,13 @@ export default async function MetamaskModule(
           if (row.address !== "address" && row.amount !== "amount") {
             try {
               const amount = ethers.parseUnits(row.amount.toString(), 18);
+              console.log(amount);
+
+              // Wait for the transaction to complete before moving on
               const tx = await tokenContract.transfer(row.address, amount);
               const receipt = await tx.wait();
               const { hash } = receipt;
+              console.log(hash);
 
               if (hash) {
                 results.push({ address: row.address, txHash: hash });
@@ -92,7 +109,7 @@ export default async function MetamaskModule(
           parseStream.resume();
         });
 
-        await finished(parseCSV); 
+        await finished(parseCSV);
         response.result = results;
       } catch (error) {
         return reply
